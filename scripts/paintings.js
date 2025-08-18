@@ -158,19 +158,37 @@ function createPaintings(scene, roomInstance) {
             swapTextures[data.id] = textureLoaderInstanceP.load(data.swapImagePath, (texture) => {texture.anisotropy = anisoVal;});
         }
 
-        const frontMaterialProperties = { map: paintingTexture, metalness: 0.0, };
+        let frontMaterial;
 
-        if (!data.isFlat) {
-            frontMaterialProperties.normalMap = canvasNormalMap;
-            frontMaterialProperties.normalScale = new THREE.Vector2(0.4, 0.4);
-            frontMaterialProperties.roughnessMap = canvasRoughnessMap;
-            frontMaterialProperties.aoMap = canvasAoMap;
-            frontMaterialProperties.aoMapIntensity = 0.6;
+        // --- START PÅ LÖSNING FÖR BLEK BILD ---
+        // Kollar om tavlan är vår instruktionsbild
+        if (data.id === 'controls_display') {
+            // Använd MeshBasicMaterial för instruktionsbilden så den inte påverkas av ljus eller skuggor.
+            // Detta ger en klar och tydlig bild med hög kontrast.
+            frontMaterial = new THREE.MeshBasicMaterial({
+                map: paintingTexture
+            });
         } else {
-            frontMaterialProperties.roughness = 0.8;
+            // Använd MeshStandardMaterial för alla riktiga tavlor så de ser realistiska ut i galleriet.
+            const frontMaterialProperties = {
+                map: paintingTexture,
+                metalness: 0.0,
+            };
+    
+            if (!data.isFlat) {
+                frontMaterialProperties.normalMap = canvasNormalMap;
+                frontMaterialProperties.normalScale = new THREE.Vector2(0.4, 0.4);
+                frontMaterialProperties.roughnessMap = canvasRoughnessMap;
+                frontMaterialProperties.aoMap = canvasAoMap;
+                frontMaterialProperties.aoMapIntensity = 0.6;
+            } else {
+                frontMaterialProperties.roughness = 0.8;
+            }
+            
+            frontMaterial = new THREE.MeshStandardMaterial(frontMaterialProperties);
         }
+        // --- SLUT PÅ LÖSNING ---
         
-        const frontMaterial = new THREE.MeshStandardMaterial(frontMaterialProperties);
         let paintingGeometry;
         let materialsForMesh;
 

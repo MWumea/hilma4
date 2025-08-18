@@ -13,7 +13,7 @@ let worldTimerObject = null;
 // Objekt för att hålla reda på original-, ledtråds- och specialtexturer
 let originalTextures = {};
 let hintTextures = {};
-let swapTextures = {}; // NY: För bilder som ska bytas ut
+let swapTextures = {}; // För bilder som ska bytas ut
 
 // Funktion för att skapa timern i 3D-världen
 function createWorldTimer(scene, paintingMesh, paintingData) {
@@ -42,7 +42,7 @@ function createWorldTimer(scene, paintingMesh, paintingData) {
     timerMesh.position.set(
         paintingPos.x,
         paintingPos.y + (paintingSize.height / 2) + 0.15, // Höjden är 15cm ovanför tavlans kant
-        paintingPos.z + 0.03 // JUSTERAD: Flyttad 3cm framför tavlan
+        paintingPos.z + 0.03 // Flyttad 3cm framför tavlan
     );
     timerMesh.rotation.y = paintingMesh.rotation.y;
     
@@ -120,7 +120,6 @@ function createPaintings(scene, roomInstance) {
             position: new THREE.Vector3(-W_half + wallOffsetToCenter, paintingCenterY, D_half * 0.4),
             rotationY: Math.PI / 2, size: { width: paintingWidth, height: paintingHeight }
         },
-        // --- START: ÄNDRING FÖR HILMA 4 ---
         {
             id: "controls_display", // Nytt, unikt ID
             imagePath: "images/spelkontroller.jpg", // Bild på spelkontroller
@@ -130,7 +129,6 @@ function createPaintings(scene, roomInstance) {
             size: { width: paintingWidth * 1.6, height: paintingWidth * 0.9 }, // 16:9 aspect ratio
             isFlat: true // Renderas som en platt yta
         },
-        // --- SLUT: ÄNDRING FÖR HILMA 4 ---
         {
             id: "painting_right_1", imagePath: "images/tavla4.jpg",
             hintImagePath: "images/tavla4_hint.jpg",
@@ -156,7 +154,6 @@ function createPaintings(scene, roomInstance) {
             hintTextures[data.id] = textureLoaderInstanceP.load(data.hintImagePath, (texture) => {texture.anisotropy = anisoVal;});
         }
         
-        // NY: Ladda in texturer som ska bytas ut
         if (data.swapImagePath) {
             swapTextures[data.id] = textureLoaderInstanceP.load(data.swapImagePath, (texture) => {texture.anisotropy = anisoVal;});
         }
@@ -236,6 +233,6 @@ function getPaintingTextures() {
     return {
         originals: originalTextures,
         hints: hintTextures,
-        swaps: swapTextures // NY: Gör swap-texturerna tillgängliga
+        swaps: swapTextures
     };
 }

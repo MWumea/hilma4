@@ -728,4 +728,3 @@ function animate() {
 
 init();
 checkXR();
-}

@@ -89,7 +89,8 @@ function createPaintings(scene, roomInstance) {
     const H_gallery = roomInstance.roomSize.height;
     const D_half = roomInstance.roomSize.depth;
     
-    const paintingCenterY = H_gallery * 0.55;
+    // --- ÄNDRING 1: Sänker alla tavlor med ytterligare 30 cm ---
+    const paintingCenterY = (H_gallery * 0.55) - 0.3;
     const wallOffsetToCenter = 0.04; 
     const paintingDepth = 0.04; 
 
@@ -124,9 +125,14 @@ function createPaintings(scene, roomInstance) {
             id: "controls_display", // Nytt, unikt ID
             imagePath: "images/spelkontroller.jpg", // Bild på spelkontroller
             swapImagePath: "images/forstoringsglas_hint.jpg", // Bild som den byts till
-            position: new THREE.Vector3(0, paintingCenterY, D_half - wallOffsetToCenter),
+            position: new THREE.Vector3(0, paintingCenterY - 0.3, D_half - wallOffsetToCenter),
             rotationY: Math.PI, 
-            size: { width: paintingWidth * 1.6, height: paintingWidth * 0.9 }, // 16:9 aspect ratio
+            // --- ÄNDRING 2: Korrigerat storlek för att matcha bildens originalproportioner (ca 2.1:1) ---
+            size: (() => {
+                const controlsWidth = paintingWidth * 1.8; // Behåller en bred storlek
+                const controlsAspectRatio = 2.1; // Bildens verkliga proportioner
+                return { width: controlsWidth, height: controlsWidth / controlsAspectRatio };
+            })(),
             isFlat: true // Renderas som en platt yta
         },
         {
@@ -160,11 +166,9 @@ function createPaintings(scene, roomInstance) {
 
         let frontMaterial;
 
-        // --- START PÅ LÖSNING FÖR BLEK BILD ---
         // Kollar om tavlan är vår instruktionsbild
         if (data.id === 'controls_display') {
             // Använd MeshBasicMaterial för instruktionsbilden så den inte påverkas av ljus eller skuggor.
-            // Detta ger en klar och tydlig bild med hög kontrast.
             frontMaterial = new THREE.MeshBasicMaterial({
                 map: paintingTexture
             });
@@ -187,7 +191,6 @@ function createPaintings(scene, roomInstance) {
             
             frontMaterial = new THREE.MeshStandardMaterial(frontMaterialProperties);
         }
-        // --- SLUT PÅ LÖSNING ---
         
         let paintingGeometry;
         let materialsForMesh;

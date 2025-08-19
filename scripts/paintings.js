@@ -127,13 +127,12 @@ function createPaintings(scene, roomInstance) {
             swapImagePath: "images/forstoringsglas_hint.jpg", // Bild som den byts till
             position: new THREE.Vector3(0, paintingCenterY - 0.3, D_half - wallOffsetToCenter),
             rotationY: Math.PI, 
-            // --- ÄNDRING 2: Korrigerat storlek för att matcha bildens originalproportioner (ca 2.1:1) ---
             size: (() => {
-                const controlsWidth = paintingWidth * 1.8; // Behåller en bred storlek
-                const controlsAspectRatio = 2.1; // Bildens verkliga proportioner
-                return { width: controlsWidth, height: controlsWidth / controlsAspectRatio };
-            })(),
-            isFlat: true // Renderas som en platt yta
+        const controlsWidth = paintingWidth * 1.8; // Behåller en bred storlek
+        const controlsAspectRatio = 2732 / 2048; // << KORREKT VÄRDE
+        return { width: controlsWidth, height: controlsWidth / controlsAspectRatio };
+    })(),
+    isFlat: true // Renderas som en platt yta
         },
         {
             id: "painting_right_1", imagePath: "images/tavla4.jpg",
@@ -165,32 +164,24 @@ function createPaintings(scene, roomInstance) {
         }
 
         let frontMaterial;
+        
+        // Använd MeshStandardMaterial för alla tavlor så de ser realistiska ut i galleriet.
+        const frontMaterialProperties = {
+            map: paintingTexture,
+            metalness: 0.0,
+        };
 
-        // Kollar om tavlan är vår instruktionsbild
-        if (data.id === 'controls_display') {
-            // Använd MeshBasicMaterial för instruktionsbilden så den inte påverkas av ljus eller skuggor.
-            frontMaterial = new THREE.MeshBasicMaterial({
-                map: paintingTexture
-            });
+        if (!data.isFlat) {
+            frontMaterialProperties.normalMap = canvasNormalMap;
+            frontMaterialProperties.normalScale = new THREE.Vector2(0.4, 0.4);
+            frontMaterialProperties.roughnessMap = canvasRoughnessMap;
+            frontMaterialProperties.aoMap = canvasAoMap;
+            frontMaterialProperties.aoMapIntensity = 0.6;
         } else {
-            // Använd MeshStandardMaterial för alla riktiga tavlor så de ser realistiska ut i galleriet.
-            const frontMaterialProperties = {
-                map: paintingTexture,
-                metalness: 0.0,
-            };
-    
-            if (!data.isFlat) {
-                frontMaterialProperties.normalMap = canvasNormalMap;
-                frontMaterialProperties.normalScale = new THREE.Vector2(0.4, 0.4);
-                frontMaterialProperties.roughnessMap = canvasRoughnessMap;
-                frontMaterialProperties.aoMap = canvasAoMap;
-                frontMaterialProperties.aoMapIntensity = 0.6;
-            } else {
-                frontMaterialProperties.roughness = 0.8;
-            }
-            
-            frontMaterial = new THREE.MeshStandardMaterial(frontMaterialProperties);
+            frontMaterialProperties.roughness = 0.8;
         }
+        
+        frontMaterial = new THREE.MeshStandardMaterial(frontMaterialProperties);
         
         let paintingGeometry;
         let materialsForMesh;

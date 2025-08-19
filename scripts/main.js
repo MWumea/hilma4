@@ -113,7 +113,7 @@ function init() {
     playerRig.add(camera);
     scene.add(playerRig);
     
-    renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+    renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
     

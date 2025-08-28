@@ -40,7 +40,7 @@ let lastWidth = 0;
 let lastHeight = 0;
 
 let gameTimerInterval = null;
-const gameDuration = 5 * 60;
+const gameDuration = 6 * 60;
 let timeRemaining = gameDuration;
 let timerElement;
 const revealStartTime = 60;

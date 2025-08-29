@@ -165,24 +165,34 @@ function createPaintings(scene, roomInstance) {
 
         let frontMaterial;
         
-        // Använd MeshStandardMaterial för alla tavlor så de ser realistiska ut i galleriet.
-        const frontMaterialProperties = {
-            map: paintingTexture,
-            metalness: 0.0,
-        };
+        // --- START PÅ DEN NYA, SPECIFIKA ÄNDRINGEN ---
 
-        if (!data.isFlat) {
-            frontMaterialProperties.normalMap = canvasNormalMap;
-            frontMaterialProperties.normalScale = new THREE.Vector2(0.4, 0.4);
-            frontMaterialProperties.roughnessMap = canvasRoughnessMap;
-            frontMaterialProperties.aoMap = canvasAoMap;
-            frontMaterialProperties.aoMapIntensity = 0.6;
+        if (data.id === 'controls_display') {
+            // Ge ENDAST kontroll-displayen ett MeshBasicMaterial så att den blir immun mot ljus.
+            frontMaterial = new THREE.MeshBasicMaterial({
+                map: paintingTexture
+            });
         } else {
-            frontMaterialProperties.roughness = 0.8;
+            // ALLA ANDRA objekt (tavlor OCH Hilma-porträttet) får ett MeshStandardMaterial.
+            const frontMaterialProperties = {
+                map: paintingTexture,
+                metalness: 0.0,
+            };
+
+            if (!data.isFlat) {
+                // Egenskaper för de "riktiga" tavlorna med dukstruktur
+                frontMaterialProperties.normalMap = canvasNormalMap;
+                frontMaterialProperties.normalScale = new THREE.Vector2(0.4, 0.4);
+                frontMaterialProperties.roughnessMap = canvasRoughnessMap;
+                frontMaterialProperties.aoMap = canvasAoMap;
+                frontMaterialProperties.aoMapIntensity = 0.6;
+            } else {
+                // Egenskaper för platta ytor som ändå ska reagera på ljus (t.ex. Hilma-porträttet)
+                frontMaterialProperties.roughness = 0.8;
+            }
+            
+            frontMaterial = new THREE.MeshStandardMaterial(frontMaterialProperties);
         }
-        
-        frontMaterial = new THREE.MeshStandardMaterial(frontMaterialProperties);
-        
         let paintingGeometry;
         let materialsForMesh;
 
